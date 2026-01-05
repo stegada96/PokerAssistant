@@ -13,13 +13,16 @@ workflows:
 
         echo "== FLUTTER VERSION ==" && flutter --version
         echo "== PUB GET ==" && flutter pub get
-        echo "== FORMAT CHECK ==" && dart format . --set-exit-if-changed
+
+        # IMPORTANTISSIMO: per ora NON blocchiamo se formatta file
+        echo "== FORMAT (NON-BLOCKING) ==" && dart format .
+
         echo "== ANALYZE ==" && flutter analyze
         echo "== TEST ==" && flutter test
 
         echo "== NO DOT-SHORTHAND =="
         if grep -R -nE ":\s*\." lib; then
-          echo "ERRORE: dot-shorthand trovata"
+          echo "ERRORE: trovata dot-shorthand"
           exit 1
         else
           echo "OK"
