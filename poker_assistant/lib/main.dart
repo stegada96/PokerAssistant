@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/setup_screen.dart';
 
-void main() {
-  runApp(const PokerAssistantApp());
-}
+void main() => runApp(const PokerAssistantApp());
 
 class PokerAssistantApp extends StatelessWidget {
   const PokerAssistantApp({super.key});

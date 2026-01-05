@@ -1,41 +1,74 @@
 import 'dart:math';
+import 'hand_eval.dart';
 
-int rank(int c) => c ~/ 4;
-int suit(int c) => c % 4;
-
-int eval(List<int> h) {
-  h.sort();
-  int v = 0;
-  for (final c in h) v = v * 53 + c;
-  return v;
+class EquityRequest {
+  final int hero1;
+  final int hero2;
+  final List<int> knownBoard; // 0..5 cards
+  final int opponents; // >=1
+  final int iterations; // e.g. 10000
+  EquityRequest({
+    required this.hero1,
+    required this.hero2,
+    required this.knownBoard,
+    required this.opponents,
+    required this.iterations,
+  });
 }
 
-double monteCarlo(int h1, int h2, int opp, int iters) {
+class EquityResult {
+  final double equity; // 0..100
+  EquityResult(this.equity);
+}
+
+EquityResult computeEquity(EquityRequest req) {
   final rng = Random();
-  int win = 0, tie = 0;
+  final usedBase = List<bool>.filled(52, false);
+  usedBase[req.hero1] = true;
+  usedBase[req.hero2] = true;
+  for (final c in req.knownBoard) usedBase[c] = true;
 
-  for (int i = 0; i < iters; i++) {
-    final used = <int>{h1, h2};
-    int draw() {
-      int c;
-      do { c = rng.nextInt(52); } while (used.contains(c));
-      used.add(c);
-      return c;
+  int wins = 0, ties = 0;
+
+  for (int it = 0; it < req.iterations; it++) {
+    final used = List<bool>.from(usedBase);
+
+    // opponents
+    final oppH1 = List<int>.filled(req.opponents, 0);
+    final oppH2 = List<int>.filled(req.opponents, 0);
+    for (int i = 0; i < req.opponents; i++) {
+      oppH1[i] = dealRandom(rng, used);
+      oppH2[i] = dealRandom(rng, used);
     }
 
-    final hero = [h1, h2, draw(), draw(), draw(), draw(), draw()];
-    final heroScore = eval(hero);
+    // complete board to 5
+    final board = List<int>.filled(5, 0);
+    int idx = 0;
+    for (final c in req.knownBoard) { board[idx++] = c; }
+    while (idx < 5) { board[idx++] = dealRandom(rng, used); }
 
-    bool best = true;
-    int same = 0;
-    for (int o = 0; o < opp; o++) {
-      final oppHand = [draw(), draw(), draw(), draw(), draw(), draw(), draw()];
-      final os = eval(oppHand);
-      if (os > heroScore) best = false;
-      if (os == heroScore) same++;
+    final heroScore = eval7Best(req.hero1, req.hero2, board);
+
+    int best = heroScore;
+    int bestCount = 1;
+    bool heroBest = true;
+
+    for (int i = 0; i < req.opponents; i++) {
+      final os = eval7Best(oppH1[i], oppH2[i], board);
+      if (os > best) {
+        best = os; bestCount = 1; heroBest = false;
+      } else if (os == best) {
+        bestCount++;
+        if (heroScore != best) heroBest = false;
+      }
     }
-    if (best && same == 0) win++;
-    if (best && same > 0) tie++;
+
+    if (heroBest) {
+      if (bestCount == 1) wins++;
+      else ties++;
+    }
   }
-  return (win + tie * 0.5) / iters * 100.0;
+
+  final equity = (wins + ties / 2.0) / req.iterations * 100.0;
+  return EquityResult(equity);
 }

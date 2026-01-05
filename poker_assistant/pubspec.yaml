@@ -1,7 +1,6 @@
 name: poker_assistant
-description: PokerAssistant - decision helper Texas Hold'em
+description: PokerAssistant - decision helper Texas Hold'em (9-max)
 publish_to: "none"
-
 version: 1.0.0+1
 
 environment:
@@ -10,9 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  # Usato per utility leggere (liste, ecc.)
-  collection: ^1.18.0
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:
