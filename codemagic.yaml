@@ -15,7 +15,7 @@ workflows:
         echo "== FORMAT CHECK ==" && dart format . --set-exit-if-changed
         echo "== ANALYZE ==" && flutter analyze
         echo "== TEST ==" && flutter test
-        echo "== NO DOT-SHORTHAND ==" && ( ! grep -R -nE ":\s*\." lib )
+        echo "== NO DOT-SHORTHAND ==" && if grep -R -nE ":\s*\." lib; then echo "ERRORE: dot-shorthand trovata"; exit 1; else echo "OK"; fi
         echo "== BUILD APK ==" && flutter build apk --release
     artifacts:
       - poker_assistant/build/app/outputs/flutter-apk/app-release.apk
