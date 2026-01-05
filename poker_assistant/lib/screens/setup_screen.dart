@@ -1,3 +1,4 @@
+import 'preflop_screen.dart';
 import 'package:flutter/material.dart';
 
 class SetupScreen extends StatefulWidget {
@@ -41,7 +42,7 @@ class _SetupScreenState extends State<SetupScreen> {
               height: 52,
               child: FilledButton(
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const PreflopScreen()));
                     const SnackBar(content: Text('Setup OK. Prossimo step: Preflop + Equity')),
                   );
                 },
