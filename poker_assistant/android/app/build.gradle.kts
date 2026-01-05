@@ -7,7 +7,8 @@ plugins {
 
 android {
     namespace = "com.example.poker_assistant"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 34
+    buildToolsVersion = "34.0.0"
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
