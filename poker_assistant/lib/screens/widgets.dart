@@ -5,6 +5,8 @@ class ChipPicker<T> extends StatelessWidget {
   final String Function(T) label;
   final T? selected;
   final void Function(T) onPick;
+
+  /// Optional: color per la label (es. semi rossi/neri)
   final Color? Function(T)? colorOf;
 
   const ChipPicker({
@@ -26,10 +28,7 @@ class ChipPicker<T> extends StatelessWidget {
         return ChoiceChip(
           label: Text(
             label(v),
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: c,
-            ),
+            style: c == null ? null : TextStyle(color: c, fontWeight: FontWeight.bold),
           ),
           selected: selected == v,
           onSelected: (_) => onPick(v),
