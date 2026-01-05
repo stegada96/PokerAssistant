@@ -1,5 +1,5 @@
-import 'preflop_screen.dart';
 import 'package:flutter/material.dart';
+import 'preflop_screen.dart';
 
 class SetupScreen extends StatefulWidget {
   const SetupScreen({super.key});
@@ -9,7 +9,7 @@ class SetupScreen extends StatefulWidget {
 }
 
 class _SetupScreenState extends State<SetupScreen> {
-  int playersRemaining = 6;
+  int playersRemaining = 6; // include hero
 
   @override
   Widget build(BuildContext context) {
@@ -42,8 +42,11 @@ class _SetupScreenState extends State<SetupScreen> {
               height: 52,
               child: FilledButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const PreflopScreen()));
-                    const SnackBar(content: Text('Setup OK. Prossimo step: Preflop + Equity')),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => PreflopScreen(initialPlayers: playersRemaining),
+                    ),
                   );
                 },
                 child: const Text('INIZIA'),
