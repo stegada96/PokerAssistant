@@ -5,8 +5,14 @@ workflows:
     environment:
       flutter: stable
     scripts:
-      - cd poker_assistant
-      - ./tool/verify.sh
-      - flutter build apk --release
+      - echo "== ROOT ==" && pwd && ls -la
+      - echo "== ENTER poker_assistant ==" && cd poker_assistant && pwd && ls -la
+      - echo "== FLUTTER VERSION ==" && flutter --version
+      - echo "== PUB GET ==" && flutter pub get
+      - echo "== FORMAT CHECK ==" && dart format . --set-exit-if-changed
+      - echo "== ANALYZE ==" && flutter analyze
+      - echo "== TEST ==" && flutter test
+      - echo "== NO DOT-SHORTHAND ==" && ( ! grep -R -nE ":\s*\." lib )
+      - echo "== BUILD APK ==" && flutter build apk --release
     artifacts:
       - poker_assistant/build/app/outputs/flutter-apk/app-release.apk
