@@ -1,7 +1,7 @@
 import 'dart:math';
 
 int cardRank(int id) => (id ~/ 4) + 2; // 2..14
-int cardSuit(int id) => id % 4;        // 0..3
+int cardSuit(int id) => id % 4; // 0..3
 
 int _highestExcluding(List<int> cnt, int ex1, int ex2) {
   for (int r = 14; r >= 2; r--) {
@@ -22,18 +22,26 @@ int eval5(int a, int b, int c, int d, int e) {
   }
 
   r.sort((x, y) => y.compareTo(x));
-  final isFlush = (s[0] == s[1] && s[1] == s[2] && s[2] == s[3] && s[3] == s[4]);
+  final isFlush =
+      (s[0] == s[1] && s[1] == s[2] && s[2] == s[3] && s[3] == s[4]);
 
   bool isStraight = false;
   int highStraight = r[0];
   if (r[0] == 14 && r[1] == 5 && r[2] == 4 && r[3] == 3 && r[4] == 2) {
-    isStraight = true; highStraight = 5;
-  } else if (r[0] == r[1] + 1 && r[1] == r[2] + 1 && r[2] == r[3] + 1 && r[3] == r[4] + 1) {
-    isStraight = true; highStraight = r[0];
+    isStraight = true;
+    highStraight = 5;
+  } else if (r[0] == r[1] + 1 &&
+      r[1] == r[2] + 1 &&
+      r[2] == r[3] + 1 &&
+      r[3] == r[4] + 1) {
+    isStraight = true;
+    highStraight = r[0];
   }
 
   final cnt = List<int>.filled(15, 0);
-  for (final x in r) cnt[x]++;
+  for (final x in r) {
+    cnt[x]++;
+  }
 
   int four = 0, three = 0;
   final pairs = <int>[];
@@ -47,32 +55,44 @@ int eval5(int a, int b, int c, int d, int e) {
   final k = List<int>.filled(5, 0);
 
   if (isStraight && isFlush) {
-    cat = 8; k[0] = highStraight;
+    cat = 8;
+    k[0] = highStraight;
   } else if (four > 0) {
-    cat = 7; k[0] = four; k[1] = _highestExcluding(cnt, four, -1);
+    cat = 7;
+    k[0] = four;
+    k[1] = _highestExcluding(cnt, four, -1);
   } else if (three > 0 && pairs.isNotEmpty) {
-    cat = 6; k[0] = three; k[1] = pairs[0];
+    cat = 6;
+    k[0] = three;
+    k[1] = pairs[0];
   } else if (isFlush) {
-    cat = 5; k.setAll(0, r);
+    cat = 5;
+    k.setAll(0, r);
   } else if (isStraight) {
-    cat = 4; k[0] = highStraight;
+    cat = 4;
+    k[0] = highStraight;
   } else if (three > 0) {
-    cat = 3; k[0] = three;
+    cat = 3;
+    k[0] = three;
     int idx = 1;
     for (int rr = 14; rr >= 2; rr--) {
       if (cnt[rr] == 1) k[idx++] = rr;
     }
   } else if (pairs.length == 2) {
-    cat = 2; k[0] = pairs[0]; k[1] = pairs[1];
+    cat = 2;
+    k[0] = pairs[0];
+    k[1] = pairs[1];
     k[2] = _highestExcluding(cnt, pairs[0], pairs[1]);
   } else if (pairs.length == 1) {
-    cat = 1; k[0] = pairs[0];
+    cat = 1;
+    k[0] = pairs[0];
     int idx = 1;
     for (int rr = 14; rr >= 2; rr--) {
       if (cnt[rr] == 1) k[idx++] = rr;
     }
   } else {
-    cat = 0; k.setAll(0, r);
+    cat = 0;
+    k.setAll(0, r);
   }
 
   int score = cat * 10000000000;
@@ -104,7 +124,9 @@ int eval7Best(int h1, int h2, List<int> board5) {
 
 int dealRandom(Random rng, List<bool> used) {
   int id;
-  do { id = rng.nextInt(52); } while (used[id]);
+  do {
+    id = rng.nextInt(52);
+  } while (used[id]);
   used[id] = true;
   return id;
 }

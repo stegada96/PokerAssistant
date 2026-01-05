@@ -20,7 +20,9 @@ class SettingsStore {
         bb: (m["bb"] as num).toDouble(),
         ante: (m["ante"] as num).toDouble(),
         preset: StylePreset.values[m["preset"] as int],
-        openRaisePctByPos: (m["openRaisePctByPos"] as List).map((x) => (x as num).toDouble()).toList(),
+        openRaisePctByPos: (m["openRaisePctByPos"] as List)
+            .map((x) => (x as num).toDouble())
+            .toList(),
       );
     } catch (_) {
       return AppSettings.defaults();

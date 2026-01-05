@@ -52,16 +52,17 @@ class _SetupScreenState extends State<SetupScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          const Text("Tavolo attuale", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text("Tavolo attuale",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-
           Row(
             children: [
               const Expanded(child: Text("Modalità")),
               SegmentedButton<GameMode>(
                 segments: const [
                   ButtonSegment(value: GameMode.cash, label: Text("Cash")),
-                  ButtonSegment(value: GameMode.tournament, label: Text("Torneo")),
+                  ButtonSegment(
+                      value: GameMode.tournament, label: Text("Torneo")),
                 ],
                 selected: {s.mode},
                 onSelectionChanged: (v) async {
@@ -72,29 +73,40 @@ class _SetupScreenState extends State<SetupScreen> {
             ],
           ),
           const SizedBox(height: 10),
-
           Row(
             children: [
               const Expanded(child: Text("Giocatori al tavolo (max 9)")),
               IconButton(
-                onPressed: () async { setState(() => s = s.copyWith(playersAtTable: (s.playersAtTable - 1).clamp(2, 9))); await _save(); },
+                onPressed: () async {
+                  setState(() => s = s.copyWith(
+                      playersAtTable: (s.playersAtTable - 1).clamp(2, 9)));
+                  await _save();
+                },
                 icon: const Icon(Icons.remove_circle_outline),
               ),
-              Text("${s.playersAtTable}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text("${s.playersAtTable}",
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold)),
               IconButton(
-                onPressed: () async { setState(() => s = s.copyWith(playersAtTable: (s.playersAtTable + 1).clamp(2, 9))); await _save(); },
+                onPressed: () async {
+                  setState(() => s = s.copyWith(
+                      playersAtTable: (s.playersAtTable + 1).clamp(2, 9)));
+                  await _save();
+                },
                 icon: const Icon(Icons.add_circle_outline),
               ),
             ],
           ),
           const SizedBox(height: 10),
-
           Row(
             children: [
               const Expanded(child: Text("Posizione iniziale (tu)")),
               DropdownButton<Pos9Max>(
                 value: s.startPos,
-                items: Pos9Max.values.map((p) => DropdownMenuItem(value: p, child: Text(p.label))).toList(),
+                items: Pos9Max.values
+                    .map(
+                        (p) => DropdownMenuItem(value: p, child: Text(p.label)))
+                    .toList(),
                 onChanged: (v) async {
                   if (v == null) return;
                   setState(() => s = s.copyWith(startPos: v));
@@ -104,29 +116,45 @@ class _SetupScreenState extends State<SetupScreen> {
             ],
           ),
           const SizedBox(height: 10),
-
           Row(
             children: [
               const Expanded(child: Text("SB")),
-              SizedBox(width: 120, child: TextField(controller: _sbCtl, keyboardType: const TextInputType.numberWithOptions(decimal: true), onChanged: (_) => _save())),
+              SizedBox(
+                  width: 120,
+                  child: TextField(
+                      controller: _sbCtl,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      onChanged: (_) => _save())),
             ],
           ),
           const SizedBox(height: 6),
           Row(
             children: [
               const Expanded(child: Text("BB")),
-              SizedBox(width: 120, child: TextField(controller: _bbCtl, keyboardType: const TextInputType.numberWithOptions(decimal: true), onChanged: (_) => _save())),
+              SizedBox(
+                  width: 120,
+                  child: TextField(
+                      controller: _bbCtl,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      onChanged: (_) => _save())),
             ],
           ),
           const SizedBox(height: 6),
           Row(
             children: [
               const Expanded(child: Text("Ante")),
-              SizedBox(width: 120, child: TextField(controller: _anteCtl, keyboardType: const TextInputType.numberWithOptions(decimal: true), onChanged: (_) => _save())),
+              SizedBox(
+                  width: 120,
+                  child: TextField(
+                      controller: _anteCtl,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(decimal: true),
+                      onChanged: (_) => _save())),
             ],
           ),
           const SizedBox(height: 10),
-
           Row(
             children: [
               const Expanded(child: Text("Simulazioni Monte Carlo")),
@@ -145,32 +173,32 @@ class _SetupScreenState extends State<SetupScreen> {
               ),
             ],
           ),
-
           const SizedBox(height: 18),
           const Divider(),
-          const Text("Stile di gioco", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text("Stile di gioco",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-
           Row(
             children: [
               const Expanded(child: Text("Preset")),
               DropdownButton<StylePreset>(
                 value: s.preset,
-                items: StylePreset.values.map((p) => DropdownMenuItem(value: p, child: Text(p.name))).toList(),
+                items: StylePreset.values
+                    .map((p) => DropdownMenuItem(value: p, child: Text(p.name)))
+                    .toList(),
                 onChanged: (v) async {
                   if (v == null) return;
                   final open = AppSettings.presetOpenRaise(v);
-                  setState(() => s = s.copyWith(preset: v, openRaisePctByPos: open));
+                  setState(
+                      () => s = s.copyWith(preset: v, openRaisePctByPos: open));
                   await _save();
                 },
               ),
             ],
           ),
-
           const SizedBox(height: 10),
           const Text("Open-raise % per posizione (modificabile)"),
           const SizedBox(height: 8),
-
           ...List.generate(Pos9Max.values.length, (i) {
             final p = Pos9Max.values[i];
             final pct = s.openRaisePctByPos[i];
@@ -196,7 +224,6 @@ class _SetupScreenState extends State<SetupScreen> {
               ],
             );
           }),
-
           const SizedBox(height: 18),
           SizedBox(
             height: 52,
@@ -204,7 +231,8 @@ class _SetupScreenState extends State<SetupScreen> {
               onPressed: () async {
                 await _save();
                 if (!context.mounted) return;
-                Navigator.push(context, MaterialPageRoute(builder: (_) => HandScreen(settings: s)));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => HandScreen(settings: s)));
               },
               child: const Text("INIZIA (NUOVA MANO)"),
             ),

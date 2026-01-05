@@ -26,7 +26,9 @@ EquityResult computeEquity(EquityRequest req) {
   final usedBase = List<bool>.filled(52, false);
   usedBase[req.hero1] = true;
   usedBase[req.hero2] = true;
-  for (final c in req.knownBoard) usedBase[c] = true;
+  for (final c in req.knownBoard) {
+    usedBase[c] = true;
+  }
 
   int wins = 0, ties = 0;
 
@@ -44,8 +46,12 @@ EquityResult computeEquity(EquityRequest req) {
     // complete board to 5
     final board = List<int>.filled(5, 0);
     int idx = 0;
-    for (final c in req.knownBoard) { board[idx++] = c; }
-    while (idx < 5) { board[idx++] = dealRandom(rng, used); }
+    for (final c in req.knownBoard) {
+      board[idx++] = c;
+    }
+    while (idx < 5) {
+      board[idx++] = dealRandom(rng, used);
+    }
 
     final heroScore = eval7Best(req.hero1, req.hero2, board);
 
@@ -56,7 +62,9 @@ EquityResult computeEquity(EquityRequest req) {
     for (int i = 0; i < req.opponents; i++) {
       final os = eval7Best(oppH1[i], oppH2[i], board);
       if (os > best) {
-        best = os; bestCount = 1; heroBest = false;
+        best = os;
+        bestCount = 1;
+        heroBest = false;
       } else if (os == best) {
         bestCount++;
         if (heroScore != best) heroBest = false;
@@ -64,8 +72,11 @@ EquityResult computeEquity(EquityRequest req) {
     }
 
     if (heroBest) {
-      if (bestCount == 1) wins++;
-      else ties++;
+      if (bestCount == 1) {
+        wins++;
+      } else {
+        ties++;
+      }
     }
   }
 

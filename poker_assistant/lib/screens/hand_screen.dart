@@ -42,13 +42,29 @@ class _HandScreenState extends State<HandScreen> {
   bool matrixOpen = false;
   Timer? _debounce;
 
-  static const ranks = [14,13,12,11,10,9,8,7,6,5,4,3,2];
+  static const ranks = [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
   static const rankLabel = {
-    14:"A", 13:"K", 12:"Q", 11:"J", 10:"T",
-    9:"9", 8:"8", 7:"7", 6:"6", 5:"5", 4:"4", 3:"3", 2:"2",
+    14: "A",
+    13: "K",
+    12: "Q",
+    11: "J",
+    10: "T",
+    9: "9",
+    8: "8",
+    7: "7",
+    6: "6",
+    5: "5",
+    4: "4",
+    3: "3",
+    2: "2",
   };
-  static const suits = [0,1,2,3];
-  static const suitLabel = {0:"P",1:"C",2:"Q",3:"F"}; // Picche, Cuori, Quadri, Fiori
+  static const suits = [0, 1, 2, 3];
+  static const suitLabel = {
+    0: "P",
+    1: "C",
+    2: "Q",
+    3: "F"
+  }; // Picche, Cuori, Quadri, Fiori
 
   @override
   void initState() {
@@ -89,9 +105,12 @@ class _HandScreenState extends State<HandScreen> {
 
   Color actionColor(ActionRec a) {
     switch (a) {
-      case ActionRec.raise: return Colors.green;
-      case ActionRec.call: return Colors.orange;
-      case ActionRec.fold: return Colors.red;
+      case ActionRec.raise:
+        return Colors.green;
+      case ActionRec.call:
+        return Colors.orange;
+      case ActionRec.fold:
+        return Colors.red;
     }
   }
 
@@ -102,14 +121,16 @@ class _HandScreenState extends State<HandScreen> {
     if (street.index >= Street.flop.index) {
       final a = f1.idOrNull(), b = f2.idOrNull(), c = f3.idOrNull();
       if (a == null || b == null || c == null) return null;
-      ids.addAll([a,b,c]);
+      ids.addAll([a, b, c]);
     }
     if (street.index >= Street.turn.index) {
-      final x = t.idOrNull(); if (x == null) return null;
+      final x = t.idOrNull();
+      if (x == null) return null;
       ids.add(x);
     }
     if (street.index >= Street.river.index) {
-      final x = r.idOrNull(); if (x == null) return null;
+      final x = r.idOrNull();
+      if (x == null) return null;
       ids.add(x);
     }
     return ids;
@@ -160,9 +181,11 @@ class _HandScreenState extends State<HandScreen> {
       final opp = (playersInHand - 1).clamp(1, 8);
       // thresholds scale with opponents
       final raiseTh = (52 - (opp - 1) * 3).clamp(35, 52).toDouble();
-      final callTh  = (40 - (opp - 1) * 2).clamp(25, 40).toDouble();
+      final callTh = (40 - (opp - 1) * 2).clamp(25, 40).toDouble();
       if (e >= raiseTh) return ActionRec.raise;
-      if (e >= callTh) return base == ActionRec.raise ? ActionRec.raise : ActionRec.call;
+      if (e >= callTh) {
+        return base == ActionRec.raise ? ActionRec.raise : ActionRec.call;
+      }
       return ActionRec.fold;
     }
 
@@ -186,7 +209,9 @@ class _HandScreenState extends State<HandScreen> {
       return "Base ${base.name.toUpperCase()} da ${pos.label} • Equity ${e.toStringAsFixed(1)}% (vs ${playersInHand - 1})";
     }
     final po = _potOdds();
-    if (po == null) return "Equity ${e.toStringAsFixed(1)}% • fast mode (POT/BET not entered)";
+    if (po == null) {
+      return "Equity ${e.toStringAsFixed(1)}% • fast mode (POT/BET not entered)";
+    }
     final need = (po * 100).toStringAsFixed(1);
     return "Equity ${e.toStringAsFixed(1)}% vs PotOdds $need% (Pot ${_potOrZero()} / Bet ${_betOrZero()})";
   }
@@ -237,9 +262,13 @@ class _HandScreenState extends State<HandScreen> {
 
   void nextStreet() {
     setState(() {
-      if (street == Street.preflop) street = Street.flop;
-      else if (street == Street.flop) street = Street.turn;
-      else if (street == Street.turn) street = Street.river;
+      if (street == Street.preflop) {
+        street = Street.flop;
+      } else if (street == Street.flop) {
+        street = Street.turn;
+      } else if (street == Street.turn) {
+        street = Street.river;
+      }
     });
     trigger();
   }
@@ -254,9 +283,9 @@ class _HandScreenState extends State<HandScreen> {
     }
 
     Color cellColor(String lab) {
-      if (d.raise.contains(lab)) return Colors.green.withOpacity(0.55);
-      if (d.call.contains(lab)) return Colors.orange.withOpacity(0.55);
-      return Colors.red.withOpacity(0.25);
+      if (d.raise.contains(lab)) return Colors.green.withValues(alpha: 0.55);
+      if (d.call.contains(lab)) return Colors.orange.withValues(alpha: 0.55);
+      return Colors.red.withValues(alpha: 0.25);
     }
 
     final rows = ranks;
@@ -265,7 +294,8 @@ class _HandScreenState extends State<HandScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Range per posizione (13×13)", style: TextStyle(fontWeight: FontWeight.bold)),
+        const Text("Range per posizione (13×13)",
+            style: TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -278,7 +308,9 @@ class _HandScreenState extends State<HandScreen> {
                   final suited = (hi < lo); // upper triangle suited
                   final a = hi >= lo ? hi : lo;
                   final b = hi >= lo ? lo : hi;
-                  final lab = (a == b) ? cellLabel(a, b, false) : cellLabel(a, b, suited);
+                  final lab = (a == b)
+                      ? cellLabel(a, b, false)
+                      : cellLabel(a, b, suited);
                   return Container(
                     width: 26,
                     height: 26,
@@ -288,7 +320,8 @@ class _HandScreenState extends State<HandScreen> {
                       color: cellColor(lab),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: Text(rankLabel[ (a==b ? a : (hi)) ]!, style: const TextStyle(fontSize: 10)),
+                    child: Text(rankLabel[(a == b ? a : (hi))]!,
+                        style: const TextStyle(fontSize: 10)),
                   );
                 }).toList(),
               );
@@ -296,7 +329,8 @@ class _HandScreenState extends State<HandScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        const Text("Verde=Raise • Giallo=Call • Rosso=Fold", style: TextStyle(fontSize: 12)),
+        const Text("Verde=Raise • Giallo=Call • Rosso=Fold",
+            style: TextStyle(fontSize: 12)),
       ],
     );
   }
@@ -310,7 +344,10 @@ class _HandScreenState extends State<HandScreen> {
       appBar: AppBar(
         title: Text("${street.name.toUpperCase()} • ${pos.label}"),
         actions: [
-          IconButton(onPressed: newHand, icon: const Icon(Icons.refresh), tooltip: "Nuova mano (+1 posizione)"),
+          IconButton(
+              onPressed: newHand,
+              icon: const Icon(Icons.refresh),
+              tooltip: "Nuova mano (+1 posizione)"),
         ],
       ),
       body: ListView(
@@ -318,20 +355,30 @@ class _HandScreenState extends State<HandScreen> {
         children: [
           Row(
             children: [
-              Expanded(child: Text("In mano adesso (te incluso): $playersInHand")),
+              Expanded(
+                  child: Text("In mano adesso (te incluso): $playersInHand")),
               IconButton(
-                onPressed: () { setState(() => playersInHand = (playersInHand - 1).clamp(2, 9)); trigger(); },
+                onPressed: () {
+                  setState(
+                      () => playersInHand = (playersInHand - 1).clamp(2, 9));
+                  trigger();
+                },
                 icon: const Icon(Icons.remove_circle_outline),
               ),
               IconButton(
-                onPressed: () { setState(() => playersInHand = (playersInHand + 1).clamp(2, 9)); trigger(); },
+                onPressed: () {
+                  setState(
+                      () => playersInHand = (playersInHand + 1).clamp(2, 9));
+                  trigger();
+                },
                 icon: const Icon(Icons.add_circle_outline),
               ),
             ],
           ),
           const SizedBox(height: 8),
 
-          Text("SB ${s.sb} / BB ${s.bb} • Ante ${s.ante} • ${s.mode == GameMode.cash ? "Cash" : "Torneo"}"),
+          Text(
+              "SB ${s.sb} / BB ${s.bb} • Ante ${s.ante} • ${s.mode == GameMode.cash ? "Cash" : "Torneo"}"),
           const SizedBox(height: 10),
 
           Container(
@@ -345,7 +392,8 @@ class _HandScreenState extends State<HandScreen> {
               children: [
                 Text(
                   e == null ? "Equity: —" : "Equity: ${e.toStringAsFixed(1)}%",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: color),
+                  style: TextStyle(
+                      fontSize: 22, fontWeight: FontWeight.bold, color: color),
                 ),
                 const SizedBox(height: 6),
                 Text(reason),
@@ -361,7 +409,10 @@ class _HandScreenState extends State<HandScreen> {
               Expanded(
                 child: FilledButton.icon(
                   onPressed: () {},
-                  style: FilledButton.styleFrom(backgroundColor: rec == ActionRec.raise ? Colors.green : Colors.green.withOpacity(0.25)),
+                  style: FilledButton.styleFrom(
+                      backgroundColor: rec == ActionRec.raise
+                          ? Colors.green
+                          : Colors.green.withValues(alpha: 0.25)),
                   icon: const Icon(Icons.trending_up),
                   label: const Text("RAISE"),
                 ),
@@ -376,14 +427,21 @@ class _HandScreenState extends State<HandScreen> {
                       builder: (_) => AlertDialog(
                         title: const Text("Passare alla street successiva?"),
                         actions: [
-                          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("NO")),
-                          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text("SÌ")),
+                          TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text("NO")),
+                          FilledButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: const Text("SÌ")),
                         ],
                       ),
                     );
                     if (go == true) nextStreet();
                   },
-                  style: FilledButton.styleFrom(backgroundColor: rec == ActionRec.call ? Colors.orange : Colors.orange.withOpacity(0.25)),
+                  style: FilledButton.styleFrom(
+                      backgroundColor: rec == ActionRec.call
+                          ? Colors.orange
+                          : Colors.orange.withValues(alpha: 0.25)),
                   icon: const Icon(Icons.check_circle_outline),
                   label: const Text("CHECK/CALL"),
                 ),
@@ -391,8 +449,13 @@ class _HandScreenState extends State<HandScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: FilledButton.icon(
-                  onPressed: () { newHand(); },
-                  style: FilledButton.styleFrom(backgroundColor: rec == ActionRec.fold ? Colors.red : Colors.red.withOpacity(0.25)),
+                  onPressed: () {
+                    newHand();
+                  },
+                  style: FilledButton.styleFrom(
+                      backgroundColor: rec == ActionRec.fold
+                          ? Colors.red
+                          : Colors.red.withValues(alpha: 0.25)),
                   icon: const Icon(Icons.close),
                   label: const Text("FOLD"),
                 ),
@@ -407,14 +470,26 @@ class _HandScreenState extends State<HandScreen> {
             Row(
               children: [
                 const Expanded(child: Text("POT")),
-                SizedBox(width: 120, child: TextField(controller: potCtl, keyboardType: const TextInputType.numberWithOptions(decimal: true), onChanged: (_) => trigger())),
+                SizedBox(
+                    width: 120,
+                    child: TextField(
+                        controller: potCtl,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        onChanged: (_) => trigger())),
               ],
             ),
             const SizedBox(height: 6),
             Row(
               children: [
                 const Expanded(child: Text("BET da chiamare")),
-                SizedBox(width: 120, child: TextField(controller: betCtl, keyboardType: const TextInputType.numberWithOptions(decimal: true), onChanged: (_) => trigger())),
+                SizedBox(
+                    width: 120,
+                    child: TextField(
+                        controller: betCtl,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
+                        onChanged: (_) => trigger())),
               ],
             ),
             const SizedBox(height: 10),
@@ -423,59 +498,159 @@ class _HandScreenState extends State<HandScreen> {
           const Divider(height: 26),
 
           // HERO cards
-          const Text("Hero", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text("Hero",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           const Text("Carta 1"),
-          ChipPicker<int>(values: ranks, label: (v) => rankLabel[v]!, selected: h1.rank, onPick: (v){ setState(()=>h1=CardPick(rank:v,suit:h1.suit)); trigger(); }),
+          ChipPicker<int>(
+              values: ranks,
+              label: (v) => rankLabel[v]!,
+              selected: h1.rank,
+              onPick: (v) {
+                setState(() => h1 = CardPick(rank: v, suit: h1.suit));
+                trigger();
+              }),
           const SizedBox(height: 8),
-          ChipPicker<int>(values: suits, label: (v) => suitLabel[v]!, selected: h1.suit, onPick: (v){ setState(()=>h1=CardPick(rank:h1.rank,suit:v)); trigger(); }),
+          ChipPicker<int>(
+              values: suits,
+              label: (v) => suitLabel[v]!,
+              selected: h1.suit,
+              onPick: (v) {
+                setState(() => h1 = CardPick(rank: h1.rank, suit: v));
+                trigger();
+              }),
 
           const SizedBox(height: 12),
           const Text("Carta 2"),
-          ChipPicker<int>(values: ranks, label: (v) => rankLabel[v]!, selected: h2.rank, onPick: (v){ setState(()=>h2=CardPick(rank:v,suit:h2.suit)); trigger(); }),
+          ChipPicker<int>(
+              values: ranks,
+              label: (v) => rankLabel[v]!,
+              selected: h2.rank,
+              onPick: (v) {
+                setState(() => h2 = CardPick(rank: v, suit: h2.suit));
+                trigger();
+              }),
           const SizedBox(height: 8),
-          ChipPicker<int>(values: suits, label: (v) => suitLabel[v]!, selected: h2.suit, onPick: (v){ setState(()=>h2=CardPick(rank:h2.rank,suit:v)); trigger(); }),
+          ChipPicker<int>(
+              values: suits,
+              label: (v) => suitLabel[v]!,
+              selected: h2.suit,
+              onPick: (v) {
+                setState(() => h2 = CardPick(rank: h2.rank, suit: v));
+                trigger();
+              }),
 
           const Divider(height: 26),
 
           // BOARD by street
           if (street.index >= Street.flop.index) ...[
-            const Text("FLOP", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text("FLOP",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 6),
             const Text("Flop 1"),
-            ChipPicker<int>(values: ranks, label: (v) => rankLabel[v]!, selected: f1.rank, onPick: (v){ setState(()=>f1=CardPick(rank:v,suit:f1.suit)); trigger(); }),
+            ChipPicker<int>(
+                values: ranks,
+                label: (v) => rankLabel[v]!,
+                selected: f1.rank,
+                onPick: (v) {
+                  setState(() => f1 = CardPick(rank: v, suit: f1.suit));
+                  trigger();
+                }),
             const SizedBox(height: 6),
-            ChipPicker<int>(values: suits, label: (v) => suitLabel[v]!, selected: f1.suit, onPick: (v){ setState(()=>f1=CardPick(rank:f1.rank,suit:v)); trigger(); }),
-
+            ChipPicker<int>(
+                values: suits,
+                label: (v) => suitLabel[v]!,
+                selected: f1.suit,
+                onPick: (v) {
+                  setState(() => f1 = CardPick(rank: f1.rank, suit: v));
+                  trigger();
+                }),
             const SizedBox(height: 10),
             const Text("Flop 2"),
-            ChipPicker<int>(values: ranks, label: (v) => rankLabel[v]!, selected: f2.rank, onPick: (v){ setState(()=>f2=CardPick(rank:v,suit:f2.suit)); trigger(); }),
+            ChipPicker<int>(
+                values: ranks,
+                label: (v) => rankLabel[v]!,
+                selected: f2.rank,
+                onPick: (v) {
+                  setState(() => f2 = CardPick(rank: v, suit: f2.suit));
+                  trigger();
+                }),
             const SizedBox(height: 6),
-            ChipPicker<int>(values: suits, label: (v) => suitLabel[v]!, selected: f2.suit, onPick: (v){ setState(()=>f2=CardPick(rank:f2.rank,suit:v)); trigger(); }),
-
+            ChipPicker<int>(
+                values: suits,
+                label: (v) => suitLabel[v]!,
+                selected: f2.suit,
+                onPick: (v) {
+                  setState(() => f2 = CardPick(rank: f2.rank, suit: v));
+                  trigger();
+                }),
             const SizedBox(height: 10),
             const Text("Flop 3"),
-            ChipPicker<int>(values: ranks, label: (v) => rankLabel[v]!, selected: f3.rank, onPick: (v){ setState(()=>f3=CardPick(rank:v,suit:f3.suit)); trigger(); }),
+            ChipPicker<int>(
+                values: ranks,
+                label: (v) => rankLabel[v]!,
+                selected: f3.rank,
+                onPick: (v) {
+                  setState(() => f3 = CardPick(rank: v, suit: f3.suit));
+                  trigger();
+                }),
             const SizedBox(height: 6),
-            ChipPicker<int>(values: suits, label: (v) => suitLabel[v]!, selected: f3.suit, onPick: (v){ setState(()=>f3=CardPick(rank:f3.rank,suit:v)); trigger(); }),
+            ChipPicker<int>(
+                values: suits,
+                label: (v) => suitLabel[v]!,
+                selected: f3.suit,
+                onPick: (v) {
+                  setState(() => f3 = CardPick(rank: f3.rank, suit: v));
+                  trigger();
+                }),
           ],
 
           if (street.index >= Street.turn.index) ...[
             const Divider(height: 26),
-            const Text("TURN", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text("TURN",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 6),
-            ChipPicker<int>(values: ranks, label: (v) => rankLabel[v]!, selected: t.rank, onPick: (v){ setState(()=>t=CardPick(rank:v,suit:t.suit)); trigger(); }),
+            ChipPicker<int>(
+                values: ranks,
+                label: (v) => rankLabel[v]!,
+                selected: t.rank,
+                onPick: (v) {
+                  setState(() => t = CardPick(rank: v, suit: t.suit));
+                  trigger();
+                }),
             const SizedBox(height: 6),
-            ChipPicker<int>(values: suits, label: (v) => suitLabel[v]!, selected: t.suit, onPick: (v){ setState(()=>t=CardPick(rank:t.rank,suit:v)); trigger(); }),
+            ChipPicker<int>(
+                values: suits,
+                label: (v) => suitLabel[v]!,
+                selected: t.suit,
+                onPick: (v) {
+                  setState(() => t = CardPick(rank: t.rank, suit: v));
+                  trigger();
+                }),
           ],
 
           if (street.index >= Street.river.index) ...[
             const Divider(height: 26),
-            const Text("RIVER", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text("RIVER",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 6),
-            ChipPicker<int>(values: ranks, label: (v) => rankLabel[v]!, selected: r.rank, onPick: (v){ setState(()=>r=CardPick(rank:v,suit:r.suit)); trigger(); }),
+            ChipPicker<int>(
+                values: ranks,
+                label: (v) => rankLabel[v]!,
+                selected: r.rank,
+                onPick: (v) {
+                  setState(() => r = CardPick(rank: v, suit: r.suit));
+                  trigger();
+                }),
             const SizedBox(height: 6),
-            ChipPicker<int>(values: suits, label: (v) => suitLabel[v]!, selected: r.suit, onPick: (v){ setState(()=>r=CardPick(rank:r.rank,suit:v)); trigger(); }),
+            ChipPicker<int>(
+                values: suits,
+                label: (v) => suitLabel[v]!,
+                selected: r.suit,
+                onPick: (v) {
+                  setState(() => r = CardPick(rank: r.rank, suit: v));
+                  trigger();
+                }),
           ],
 
           const Divider(height: 26),

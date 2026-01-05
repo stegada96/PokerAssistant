@@ -9,9 +9,11 @@ enum StylePreset { tight, balanced, aggressive }
 enum Pos9Max { utg, utg1, mp, lj, hj, co, btn, sb, bb }
 
 extension Pos9MaxX on Pos9Max {
-  String get label => const ["UTG","UTG+1","MP","LJ","HJ","CO","BTN","SB","BB"][0] == "UTG"
-      ? ["UTG","UTG+1","MP","LJ","HJ","CO","BTN","SB","BB"][index]
-      : toString();
+  String get label =>
+      const ["UTG", "UTG+1", "MP", "LJ", "HJ", "CO", "BTN", "SB", "BB"][0] ==
+              "UTG"
+          ? ["UTG", "UTG+1", "MP", "LJ", "HJ", "CO", "BTN", "SB", "BB"][index]
+          : toString();
 
   Pos9Max next() => Pos9Max.values[(index + 1) % Pos9Max.values.length];
 }
@@ -26,9 +28,9 @@ class CardPick {
 
 class AppSettings {
   final GameMode mode;
-  final int playersAtTable;     // 2..9
-  final Pos9Max startPos;       // hero position at start
-  final int iterations;         // Monte Carlo
+  final int playersAtTable; // 2..9
+  final Pos9Max startPos; // hero position at start
+  final int iterations; // Monte Carlo
   final double sb;
   final double bb;
   final double ante;
@@ -87,14 +89,14 @@ class AppSettings {
   }
 
   static AppSettings defaults() => AppSettings(
-    mode: GameMode.cash,
-    playersAtTable: 9,
-    startPos: Pos9Max.bb,
-    iterations: 10000,
-    sb: 0.5,
-    bb: 1.0,
-    ante: 0.0,
-    preset: StylePreset.balanced,
-    openRaisePctByPos: presetOpenRaise(StylePreset.balanced),
-  );
+        mode: GameMode.cash,
+        playersAtTable: 9,
+        startPos: Pos9Max.bb,
+        iterations: 10000,
+        sb: 0.5,
+        bb: 1.0,
+        ante: 0.0,
+        preset: StylePreset.balanced,
+        openRaisePctByPos: presetOpenRaise(StylePreset.balanced),
+      );
 }
