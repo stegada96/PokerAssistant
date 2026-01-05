@@ -124,13 +124,21 @@ class _HandScreenState extends State<HandScreen> {
     return false;
   }
 
-  double _pot() => double.tryParse(potCtl.text) ?? 0.0;
-  double _bet() => double.tryParse(betCtl.text) ?? 0.0;
+  double? _tryNum(String s) {
+    final t = s.trim();
+    if (t.isEmpty) return null;
+    return double.tryParse(t);
+  }
+
+  double _potOrZero() => _tryNum(potCtl.text) ?? 0.0;
+  double _betOrZero() => _tryNum(betCtl.text) ?? 0.0;
 
   double? _potOdds() {
-    final pot = _pot();
-    final bet = _bet();
-    if (bet <= 0) return null;
+    // If user doesn't enter BET (or empty/0) => NOT binding => fallback equity-only
+    final bet = _tryNum(betCtl.text);
+    if (bet == null || bet <= 0) return null;
+
+    final pot = _tryNum(potCtl.text) ?? 0.0;
     return bet / (pot + bet);
   }
 
@@ -158,12 +166,12 @@ class _HandScreenState extends State<HandScreen> {
       return ActionRec.fold;
     }
 
-    // postflop: use pot odds
+    // postflop: if BET not entered -> fallback equity-only (fast, not binding)
     final po = _potOdds();
     if (po == null) {
-      // no bet: prefer raise with strong equity else check/call
-      if (e >= 60) return ActionRec.raise;
-      if (e >= 40) return ActionRec.call;
+      // Equity-only: more permissive (play some hands)
+      if (e >= 62) return ActionRec.raise;
+      if (e >= 38) return ActionRec.call;
       return ActionRec.fold;
     }
     final need = po * 100.0;
@@ -178,9 +186,9 @@ class _HandScreenState extends State<HandScreen> {
       return "Base ${base.name.toUpperCase()} da ${pos.label} • Equity ${e.toStringAsFixed(1)}% (vs ${playersInHand - 1})";
     }
     final po = _potOdds();
-    if (po == null) return "Equity ${e.toStringAsFixed(1)}% • nessuna bet (usa check/raise)";
+    if (po == null) return "Equity ${e.toStringAsFixed(1)}% • fast mode (POT/BET not entered)";
     final need = (po * 100).toStringAsFixed(1);
-    return "Equity ${e.toStringAsFixed(1)}% vs PotOdds $need% (Pot ${_pot()} / Bet ${_bet()})";
+    return "Equity ${e.toStringAsFixed(1)}% vs PotOdds $need% (Pot ${_potOrZero()} / Bet ${_betOrZero()})";
   }
 
   void trigger() {

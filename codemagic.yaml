@@ -5,6 +5,8 @@ workflows:
     environment:
       flutter: stable
     scripts:
-      - cd poker_assistant && flutter pub get && flutter build apk --release
+      - cd poker_assistant
+      - ./tool/verify.sh
+      - flutter build apk --release
     artifacts:
       - poker_assistant/build/app/outputs/flutter-apk/app-release.apk
