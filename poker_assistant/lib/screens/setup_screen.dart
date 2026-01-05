@@ -41,7 +41,6 @@ class _SetupScreenState extends State<SetupScreen> {
               height: 52,
               child: FilledButton(
                 onPressed: () {
-                  // Per ora fa solo test build. Dopo ci mettiamo Preflop/MonteCarlo.
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Setup OK. Prossimo step: Preflop + Equity')),
                   );
