@@ -8,6 +8,11 @@ workflows:
       - |
         set -e
         echo "== ROOT ==" && pwd && ls -la
+
+        # SDK install esplicita per evitare timeout su build-tools 35
+        echo "== ANDROID SDK INSTALL (34) =="
+        sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;34.0.0" || true
+
         cd poker_assistant
         echo "== FLUTTER PROJECT ==" && pwd && ls -la
         echo "== FLUTTER VERSION ==" && flutter --version
@@ -15,7 +20,15 @@ workflows:
         echo "== FORMAT CHECK ==" && dart format . --set-exit-if-changed
         echo "== ANALYZE ==" && flutter analyze
         echo "== TEST ==" && flutter test
-        echo "== NO DOT-SHORTHAND ==" && if grep -R -nE ":\s*\." lib; then echo "ERRORE: dot-shorthand trovata"; exit 1; else echo "OK"; fi
+
+        echo "== NO DOT-SHORTHAND =="
+        if grep -R -nE ":\s*\." lib; then
+          echo "ERRORE: dot-shorthand trovata"
+          exit 1
+        else
+          echo "OK"
+        fi
+
         echo "== BUILD APK ==" && flutter build apk --release
     artifacts:
       - poker_assistant/build/app/outputs/flutter-apk/app-release.apk

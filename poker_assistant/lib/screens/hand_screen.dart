@@ -65,6 +65,8 @@ class _HandScreenState extends State<HandScreen> {
     2: "Q",
     3: "F"
   }; // Picche, Cuori, Quadri, Fiori
+  static const suitSymbol = {0: "♠", 1: "♥", 2: "♦", 3: "♣"};
+  Color suitColor(int s) => (s == 1 || s == 2) ? Colors.red : Colors.black;
 
   @override
   void initState() {
