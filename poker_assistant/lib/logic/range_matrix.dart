@@ -64,19 +64,26 @@ Set<String> topPercentHands(double pct) {
 
 /// Matrix decision by position:
 /// - green (raise): in top openRaise%
-/// - yellow (call): next buffer (openRaise% to openRaise%+callBuffer)
+/// - yellow (call/check): next buffer (openRaise% to openRaise%+callBuffer)
 /// - red (fold): rest
 class MatrixDecision {
   final Set<String> raise;
   final Set<String> call;
   MatrixDecision(this.raise, this.call);
+
+  int get foldCount => 169 - raise.length - call.length;
+  double get raisePct => raise.length / 169.0 * 100.0;
+  double get callPct => call.length / 169.0 * 100.0;
+  double get foldPct => foldCount / 169.0 * 100.0;
 }
 
 MatrixDecision decisionForPos(AppSettings s, Pos9Max pos) {
   final open = s.openRaisePctByPos[pos.index].clamp(0.0, 100.0);
-  final callBuffer = (pos.index >= Pos9Max.co.index)
-      ? 10.0
-      : 7.0; // later pos can defend a bit more
+
+  final late = (pos.index >= Pos9Max.co.index) || (pos == Pos9Max.sb);
+  final callBuffer =
+      (late ? s.callBufferLate : s.callBufferEarly).clamp(0.0, 40.0);
+
   final raise = topPercentHands(open);
   final call =
       topPercentHands((open + callBuffer).clamp(0.0, 100.0)).difference(raise);
@@ -87,21 +94,7 @@ MatrixDecision decisionForPos(AppSettings s, Pos9Max pos) {
 String holeTo169Label(int rA, int sA, int rB, int sB) {
   final hi = max(rA, rB);
   final lo = min(rA, rB);
-  if (hi == lo) {
-    String f(int r) => r == 14
-        ? "A"
-        : r == 13
-            ? "K"
-            : r == 12
-                ? "Q"
-                : r == 11
-                    ? "J"
-                    : r == 10
-                        ? "T"
-                        : "$r";
-    return "${f(hi)}${f(lo)}";
-  }
-  final suited = (sA == sB);
+
   String f(int r) => r == 14
       ? "A"
       : r == 13
@@ -113,5 +106,8 @@ String holeTo169Label(int rA, int sA, int rB, int sB) {
                   : r == 10
                       ? "T"
                       : "$r";
+
+  if (hi == lo) return "${f(hi)}${f(lo)}";
+  final suited = (sA == sB);
   return "${f(hi)}${f(lo)}${suited ? "s" : "o"}";
 }

@@ -5,6 +5,7 @@ class ChipPicker<T> extends StatelessWidget {
   final String Function(T) label;
   final T? selected;
   final void Function(T) onPick;
+  final Color? Function(T)? colorOf;
 
   const ChipPicker({
     super.key,
@@ -12,6 +13,7 @@ class ChipPicker<T> extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onPick,
+    this.colorOf,
   });
 
   @override
@@ -20,8 +22,15 @@ class ChipPicker<T> extends StatelessWidget {
       spacing: 6,
       runSpacing: 6,
       children: values.map((v) {
+        final c = colorOf?.call(v);
         return ChoiceChip(
-          label: Text(label(v)),
+          label: Text(
+            label(v),
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: c,
+            ),
+          ),
           selected: selected == v,
           onSelected: (_) => onPick(v),
         );

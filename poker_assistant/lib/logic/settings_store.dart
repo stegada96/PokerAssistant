@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/poker_models.dart';
 
 class SettingsStore {
-  static const _k = "pokerassistant_settings_v1";
+  static const _k = "pokerassistant_settings_v2";
 
   static Future<AppSettings> load() async {
     final sp = await SharedPreferences.getInstance();
@@ -23,6 +23,20 @@ class SettingsStore {
         openRaisePctByPos: (m["openRaisePctByPos"] as List)
             .map((x) => (x as num).toDouble())
             .toList(),
+        callBufferEarly: ((m["callBufferEarly"] as num?) ?? 7.0).toDouble(),
+        callBufferLate: ((m["callBufferLate"] as num?) ?? 10.0).toDouble(),
+        preflopRaiseEqBase:
+            ((m["preflopRaiseEqBase"] as num?) ?? 52.0).toDouble(),
+        preflopRaiseEqPerOpp:
+            ((m["preflopRaiseEqPerOpp"] as num?) ?? 3.0).toDouble(),
+        preflopCallEqBase:
+            ((m["preflopCallEqBase"] as num?) ?? 40.0).toDouble(),
+        preflopCallEqPerOpp:
+            ((m["preflopCallEqPerOpp"] as num?) ?? 2.0).toDouble(),
+        postflopNoBetRaiseEq:
+            ((m["postflopNoBetRaiseEq"] as num?) ?? 62.0).toDouble(),
+        postflopNoBetCallEq:
+            ((m["postflopNoBetCallEq"] as num?) ?? 38.0).toDouble(),
       );
     } catch (_) {
       return AppSettings.defaults();
@@ -41,6 +55,14 @@ class SettingsStore {
       "ante": s.ante,
       "preset": s.preset.index,
       "openRaisePctByPos": s.openRaisePctByPos,
+      "callBufferEarly": s.callBufferEarly,
+      "callBufferLate": s.callBufferLate,
+      "preflopRaiseEqBase": s.preflopRaiseEqBase,
+      "preflopRaiseEqPerOpp": s.preflopRaiseEqPerOpp,
+      "preflopCallEqBase": s.preflopCallEqBase,
+      "preflopCallEqPerOpp": s.preflopCallEqPerOpp,
+      "postflopNoBetRaiseEq": s.postflopNoBetRaiseEq,
+      "postflopNoBetCallEq": s.postflopNoBetCallEq,
     };
     await sp.setString(_k, json.encode(m));
   }

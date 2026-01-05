@@ -10,11 +10,7 @@ enum Pos9Max { utg, utg1, mp, lj, hj, co, btn, sb, bb }
 
 extension Pos9MaxX on Pos9Max {
   String get label =>
-      const ["UTG", "UTG+1", "MP", "LJ", "HJ", "CO", "BTN", "SB", "BB"][0] ==
-              "UTG"
-          ? ["UTG", "UTG+1", "MP", "LJ", "HJ", "CO", "BTN", "SB", "BB"][index]
-          : toString();
-
+      ["UTG", "UTG+1", "MP", "LJ", "HJ", "CO", "BTN", "SB", "BB"][index];
   Pos9Max next() => Pos9Max.values[(index + 1) % Pos9Max.values.length];
 }
 
@@ -36,8 +32,26 @@ class AppSettings {
   final double ante;
 
   final StylePreset preset;
-  // Percentuali personalizzabili: open-raise per posizione (9 valori)
+
+  /// Open-raise % per posizione (9 valori)
   final List<double> openRaisePctByPos; // 0..100
+
+  /// Buffer CALL/DEFEND: percentuale aggiunta oltre al raise% per creare il range call/check
+  /// early = UTG..HJ; late = CO/BTN/SB (più permissivo)
+  final double callBufferEarly;
+  final double callBufferLate;
+
+  /// Soglie equity preflop (vs unknown, multiway)
+  /// raiseEq = base - perOpp*(opponents-1)
+  /// callEq  = base - perOpp*(opponents-1)
+  final double preflopRaiseEqBase;
+  final double preflopRaiseEqPerOpp;
+  final double preflopCallEqBase;
+  final double preflopCallEqPerOpp;
+
+  /// Postflop senza POT/BET (modalità veloce equity-only)
+  final double postflopNoBetRaiseEq;
+  final double postflopNoBetCallEq;
 
   const AppSettings({
     required this.mode,
@@ -49,6 +63,14 @@ class AppSettings {
     required this.ante,
     required this.preset,
     required this.openRaisePctByPos,
+    required this.callBufferEarly,
+    required this.callBufferLate,
+    required this.preflopRaiseEqBase,
+    required this.preflopRaiseEqPerOpp,
+    required this.preflopCallEqBase,
+    required this.preflopCallEqPerOpp,
+    required this.postflopNoBetRaiseEq,
+    required this.postflopNoBetCallEq,
   });
 
   AppSettings copyWith({
@@ -61,6 +83,14 @@ class AppSettings {
     double? ante,
     StylePreset? preset,
     List<double>? openRaisePctByPos,
+    double? callBufferEarly,
+    double? callBufferLate,
+    double? preflopRaiseEqBase,
+    double? preflopRaiseEqPerOpp,
+    double? preflopCallEqBase,
+    double? preflopCallEqPerOpp,
+    double? postflopNoBetRaiseEq,
+    double? postflopNoBetCallEq,
   }) {
     return AppSettings(
       mode: mode ?? this.mode,
@@ -72,11 +102,19 @@ class AppSettings {
       ante: ante ?? this.ante,
       preset: preset ?? this.preset,
       openRaisePctByPos: openRaisePctByPos ?? this.openRaisePctByPos,
+      callBufferEarly: callBufferEarly ?? this.callBufferEarly,
+      callBufferLate: callBufferLate ?? this.callBufferLate,
+      preflopRaiseEqBase: preflopRaiseEqBase ?? this.preflopRaiseEqBase,
+      preflopRaiseEqPerOpp: preflopRaiseEqPerOpp ?? this.preflopRaiseEqPerOpp,
+      preflopCallEqBase: preflopCallEqBase ?? this.preflopCallEqBase,
+      preflopCallEqPerOpp: preflopCallEqPerOpp ?? this.preflopCallEqPerOpp,
+      postflopNoBetRaiseEq: postflopNoBetRaiseEq ?? this.postflopNoBetRaiseEq,
+      postflopNoBetCallEq: postflopNoBetCallEq ?? this.postflopNoBetCallEq,
     );
   }
 
   static List<double> presetOpenRaise(StylePreset p) {
-    // 9-max vs unknown: balanced = "gioco un po' di mani"
+    // 9-max vs unknown: balanced = gioco un po' di mani senza essere spew
     // [UTG,UTG+1,MP,LJ,HJ,CO,BTN,SB,BB]
     switch (p) {
       case StylePreset.tight:
@@ -98,5 +136,13 @@ class AppSettings {
         ante: 0.0,
         preset: StylePreset.balanced,
         openRaisePctByPos: presetOpenRaise(StylePreset.balanced),
+        callBufferEarly: 7.0,
+        callBufferLate: 10.0,
+        preflopRaiseEqBase: 52.0,
+        preflopRaiseEqPerOpp: 3.0,
+        preflopCallEqBase: 40.0,
+        preflopCallEqPerOpp: 2.0,
+        postflopNoBetRaiseEq: 62.0,
+        postflopNoBetCallEq: 38.0,
       );
 }

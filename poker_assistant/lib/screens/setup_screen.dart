@@ -32,7 +32,6 @@ class _SetupScreenState extends State<SetupScreen> {
   }
 
   Future<void> _save() async {
-    // parse numeric fields
     final sb = double.tryParse(_sbCtl.text) ?? s.sb;
     final bb = double.tryParse(_bbCtl.text) ?? s.bb;
     final ante = double.tryParse(_anteCtl.text) ?? s.ante;
@@ -120,12 +119,14 @@ class _SetupScreenState extends State<SetupScreen> {
             children: [
               const Expanded(child: Text("SB")),
               SizedBox(
-                  width: 120,
-                  child: TextField(
-                      controller: _sbCtl,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      onChanged: (_) => _save())),
+                width: 120,
+                child: TextField(
+                  controller: _sbCtl,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  onChanged: (_) => _save(),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 6),
@@ -133,25 +134,31 @@ class _SetupScreenState extends State<SetupScreen> {
             children: [
               const Expanded(child: Text("BB")),
               SizedBox(
-                  width: 120,
-                  child: TextField(
-                      controller: _bbCtl,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      onChanged: (_) => _save())),
+                width: 120,
+                child: TextField(
+                  controller: _bbCtl,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  onChanged: (_) => _save(),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 6),
           Row(
             children: [
-              const Expanded(child: Text("Ante")),
+              const Expanded(
+                child: Text("Ante (se non esiste nel cash metti 0)"),
+              ),
               SizedBox(
-                  width: 120,
-                  child: TextField(
-                      controller: _anteCtl,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      onChanged: (_) => _save())),
+                width: 120,
+                child: TextField(
+                  controller: _anteCtl,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  onChanged: (_) => _save(),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 10),
@@ -175,7 +182,7 @@ class _SetupScreenState extends State<SetupScreen> {
           ),
           const SizedBox(height: 18),
           const Divider(),
-          const Text("Stile di gioco",
+          const Text("Stile + Range",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           Row(
@@ -224,6 +231,184 @@ class _SetupScreenState extends State<SetupScreen> {
               ],
             );
           }),
+          const SizedBox(height: 14),
+          const Text("Range CALL/CHECK = Raise% + Buffer"),
+          Row(
+            children: [
+              const SizedBox(width: 140, child: Text("Buffer Early")),
+              Expanded(
+                child: Slider(
+                  value: s.callBufferEarly.clamp(0, 25),
+                  min: 0,
+                  max: 25,
+                  divisions: 25,
+                  label: "${s.callBufferEarly.toStringAsFixed(0)}%",
+                  onChanged: (v) async {
+                    setState(() => s = s.copyWith(callBufferEarly: v));
+                    await _save();
+                  },
+                ),
+              ),
+              SizedBox(
+                  width: 52,
+                  child: Text("${s.callBufferEarly.toStringAsFixed(0)}%")),
+            ],
+          ),
+          Row(
+            children: [
+              const SizedBox(width: 140, child: Text("Buffer Late")),
+              Expanded(
+                child: Slider(
+                  value: s.callBufferLate.clamp(0, 30),
+                  min: 0,
+                  max: 30,
+                  divisions: 30,
+                  label: "${s.callBufferLate.toStringAsFixed(0)}%",
+                  onChanged: (v) async {
+                    setState(() => s = s.copyWith(callBufferLate: v));
+                    await _save();
+                  },
+                ),
+              ),
+              SizedBox(
+                  width: 52,
+                  child: Text("${s.callBufferLate.toStringAsFixed(0)}%")),
+            ],
+          ),
+          const SizedBox(height: 18),
+          const Divider(),
+          const Text("Parametri consigli (tutto modificabile)",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          const Text("Preflop: soglie equity (scalano con numero avversari)"),
+          Row(
+            children: [
+              const SizedBox(width: 140, child: Text("Raise base")),
+              Expanded(
+                child: Slider(
+                  value: s.preflopRaiseEqBase.clamp(40, 70),
+                  min: 40,
+                  max: 70,
+                  divisions: 30,
+                  label: "${s.preflopRaiseEqBase.toStringAsFixed(0)}%",
+                  onChanged: (v) async {
+                    setState(() => s = s.copyWith(preflopRaiseEqBase: v));
+                    await _save();
+                  },
+                ),
+              ),
+              SizedBox(
+                  width: 52,
+                  child: Text("${s.preflopRaiseEqBase.toStringAsFixed(0)}%")),
+            ],
+          ),
+          Row(
+            children: [
+              const SizedBox(width: 140, child: Text("Raise per opp")),
+              Expanded(
+                child: Slider(
+                  value: s.preflopRaiseEqPerOpp.clamp(0, 6),
+                  min: 0,
+                  max: 6,
+                  divisions: 12,
+                  label: s.preflopRaiseEqPerOpp.toStringAsFixed(1),
+                  onChanged: (v) async {
+                    setState(() => s = s.copyWith(preflopRaiseEqPerOpp: v));
+                    await _save();
+                  },
+                ),
+              ),
+              SizedBox(
+                  width: 52,
+                  child: Text(s.preflopRaiseEqPerOpp.toStringAsFixed(1))),
+            ],
+          ),
+          Row(
+            children: [
+              const SizedBox(width: 140, child: Text("Call base")),
+              Expanded(
+                child: Slider(
+                  value: s.preflopCallEqBase.clamp(20, 60),
+                  min: 20,
+                  max: 60,
+                  divisions: 40,
+                  label: "${s.preflopCallEqBase.toStringAsFixed(0)}%",
+                  onChanged: (v) async {
+                    setState(() => s = s.copyWith(preflopCallEqBase: v));
+                    await _save();
+                  },
+                ),
+              ),
+              SizedBox(
+                  width: 52,
+                  child: Text("${s.preflopCallEqBase.toStringAsFixed(0)}%")),
+            ],
+          ),
+          Row(
+            children: [
+              const SizedBox(width: 140, child: Text("Call per opp")),
+              Expanded(
+                child: Slider(
+                  value: s.preflopCallEqPerOpp.clamp(0, 6),
+                  min: 0,
+                  max: 6,
+                  divisions: 12,
+                  label: s.preflopCallEqPerOpp.toStringAsFixed(1),
+                  onChanged: (v) async {
+                    setState(() => s = s.copyWith(preflopCallEqPerOpp: v));
+                    await _save();
+                  },
+                ),
+              ),
+              SizedBox(
+                  width: 52,
+                  child: Text(s.preflopCallEqPerOpp.toStringAsFixed(1))),
+            ],
+          ),
+          const SizedBox(height: 10),
+          const Text("Postflop (senza POT/BET): equity-only veloce"),
+          Row(
+            children: [
+              const SizedBox(width: 140, child: Text("Raise ≥")),
+              Expanded(
+                child: Slider(
+                  value: s.postflopNoBetRaiseEq.clamp(45, 80),
+                  min: 45,
+                  max: 80,
+                  divisions: 35,
+                  label: "${s.postflopNoBetRaiseEq.toStringAsFixed(0)}%",
+                  onChanged: (v) async {
+                    setState(() => s = s.copyWith(postflopNoBetRaiseEq: v));
+                    await _save();
+                  },
+                ),
+              ),
+              SizedBox(
+                  width: 52,
+                  child: Text("${s.postflopNoBetRaiseEq.toStringAsFixed(0)}%")),
+            ],
+          ),
+          Row(
+            children: [
+              const SizedBox(width: 140, child: Text("Call ≥")),
+              Expanded(
+                child: Slider(
+                  value: s.postflopNoBetCallEq.clamp(20, 60),
+                  min: 20,
+                  max: 60,
+                  divisions: 40,
+                  label: "${s.postflopNoBetCallEq.toStringAsFixed(0)}%",
+                  onChanged: (v) async {
+                    setState(() => s = s.copyWith(postflopNoBetCallEq: v));
+                    await _save();
+                  },
+                ),
+              ),
+              SizedBox(
+                  width: 52,
+                  child: Text("${s.postflopNoBetCallEq.toStringAsFixed(0)}%")),
+            ],
+          ),
           const SizedBox(height: 18),
           SizedBox(
             height: 52,
